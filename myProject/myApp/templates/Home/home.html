@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+	{% load static %}
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link href="{% static 'css/bootstrap.css' %}" rel="stylesheet" />
+		<title>Home</title>
+	</head>
+	<body>
+		<div class="container-md">
+			<h1>Task Management System</h1>
+
+      <form class="row row-cols-lg-auto g-3 align-items-center" action="{% url "index" %}" method='POST'>
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-sm-9">
+              {{ form.as_div }}
+            </div>
+            <div>
+              <input class="btn btn-primary" type="submit" value="Add Task">
+            </div>
+        </div>
+      </form>
+      <br>
+      <br>
+      <div>
+        <table class="table table-striped caption-top">
+        <caption>Your To-Do List</caption>
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Description</th>
+              <th scope="col">Created_at</th>
+              <th scope="col">Deadline</th>
+              <th scope="col">Priroity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for field in Tasks %}
+              <tr>
+                <th scope="row">
+                  <div>
+                    <button class="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..."></button>
+                  </div>
+                </th>
+                <td>{{field.description}}</td>
+                <td>{{field.created_at}}</td>
+
+                {% if field.deadline == None  %}
+                  <td>{{"Open"}}</td>
+                {% else %}
+                  <td>{{field.deadline}}</td>
+                {%endif%}
+
+                {% for num, str in prioritySentence.items %}
+                  {% if num == field.priority %}
+                    <td>{{str}}</td>
+                  {% endif %}  
+                {% endfor %}  
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+		</div>
+	</body>
+</html>
