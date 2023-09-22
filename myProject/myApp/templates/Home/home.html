@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-	{% load static %}
+  {% load static %}
 	<head>
-		<meta charset="UTF-8" />
+    <meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link href="{% static 'css/bootstrap.css' %}" rel="stylesheet" />
@@ -10,8 +10,9 @@
 		<title>Home</title>
 	</head>
 	<body>
-		<div class="container-md">
-			<h1>Task Management System</h1>
+    {% include "Home/navbar.html" %}
+    <div class="container-md">
+      <h1>Task Management System</h1>
 
       <form class="row row-cols-lg-auto g-3 align-items-center" action="{% url "index" %}" method='POST'>
         {% csrf_token %}
