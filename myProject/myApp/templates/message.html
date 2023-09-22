@@ -3,12 +3,12 @@
 	<div class="alert {{ message.tags }} alert-dismissible" role="alert">
 		<button
 			type="button"
-			class="close"
+			class="close btn-close"
 			data-dismiss="alert"
 			aria-label="Close"
 			id="closeButton"
 		>
-			<span aria-hidden="True">&times;</span>
+			<span aria-hidden="True"></span>
 		</button>
 		{{ message }}
 	</div>
@@ -28,5 +28,4 @@
 		}
 	});
 </script>
-
 {% endfor %} {% endblock %}
