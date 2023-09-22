@@ -1,6 +1,7 @@
 from django import forms
 from django.forms.widgets import DateTimeInput
 from .models import Task
+from django.utils import timezone
 
 
 class TaskForm(forms.ModelForm):
@@ -12,7 +13,6 @@ class TaskForm(forms.ModelForm):
       label="Deadline",
       required=False,
       widget=DateTimeInput(attrs={"type": "datetime-local", "class" : "form-control" , "placeholder":"deadline date"}),
-      initial="0000-00-00 00:00",
       )
     priority =  forms.ChoiceField(
         label="Priority",
@@ -36,7 +36,11 @@ class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         # Call the parent class __init__ method
         super().__init__(*args, **kwargs)
-        # self.order_fields(
-        #     [
-        #     ]
-        # )
+    
+    # Validate deadline date    
+    def clean_deadline(self):
+        deadline = self.cleaned_data['deadline']
+        
+        if deadline and deadline < timezone.now():
+            raise forms.ValidationError("Deadline must be in the future.")
+        return deadline    

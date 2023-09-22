@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+	{% load static %}
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link href="{% static 'css/bootstrap.css' %}" rel="stylesheet" />
+		<title>Home</title>
+	</head>
+	<body>
+		<div class="container-md">
+      <h1>Update Task</h1>
+      <form class="row row-cols-lg-auto g-3 align-items-center" action="{% url "updateTask" id=Task.ID %}" method='POST'>
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="row mb-3">
+            <label for="Description" class="col-sm-2 col-form-label">Name</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="Description" required value="{{Task.description}}">
+            </div>
+          </div>
+          
+          <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" for="id_deadline">Deadline</label>
+            <div class="col-sm-10">
+              <input type="datetime-local" name="deadline" value="{{Task.deadline}}" class="form-control" placeholder="deadline date" id="id_deadline">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" for="id_select">Priority</label>
+            <div class="col-sm-10">
+              <select class="form-select" aria-label="Default select example" for="id_select">
+                <option value="3">High</option>
+                <option value="2">Medium</option>
+                <option value="1">Low</option>
+                <option value="0">No Priority</option>
+              </select>
+            </div>
+          </div>
+
+          <script>
+              document.querySelector("option[value='{{Task.priority}}']").selected = true;
+          </script>
+          
+          <div>
+            <input class="btn btn-primary" type="submit" value="Update Task">
+          </div>
+        </div>
+      </form>
+    </div>
+	</body>
+</html>

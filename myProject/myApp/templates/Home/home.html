@@ -6,6 +6,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link href="{% static 'css/bootstrap.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/error.css' %}" rel="stylesheet" />
 		<title>Home</title>
 	</head>
 	<body>
@@ -35,6 +36,8 @@
               <th scope="col">Created_at</th>
               <th scope="col">Deadline</th>
               <th scope="col">Priroity</th>
+              <th scope="col">Update</th>
+              <th scope="col">Delete</th>
             </tr>
           </thead>
           <tbody>
@@ -42,7 +45,11 @@
               <tr>
                 <th scope="row">
                   <div>
-                    <button class="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..."></button>
+                    {% if field.active == False %}
+                      <input class="form-check-input" type="checkbox" checked onChange="checkButton(this, {{field.ID}})" value="" id="defaultCheck1">
+                    {% else %}
+                      <input class="form-check-input" type="checkbox" onChange="checkButton(this, {{field.ID}})" value="" id="defaultCheck1">
+                    {% endif %}
                   </div>
                 </th>
                 <td>{{field.description}}</td>
@@ -59,10 +66,18 @@
                     <td>{{str}}</td>
                   {% endif %}  
                 {% endfor %}  
+                <td><a href="{% url "updateTask" id=field.ID %}" class="btn btn-warning">Update</a></td>
+                <td>
+                  <form method="DELETE" action="{% url "DeleteTask" id=field.ID %}">
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-danger" value="Delete">
+                  </form>
+                </td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
 		</div>
+    <script src="{% static 'js/task.js' %}"></script>
 	</body>
 </html>
