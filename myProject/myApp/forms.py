@@ -29,7 +29,9 @@ class TaskForm(forms.ModelForm):
         ],
     )
     class Meta:
+        # Specify the Model that the form represents
         model = Task
+        # the model fields to show
         fields = [
           "description",
           "deadline",
@@ -54,7 +56,9 @@ class NewUserForm(UserCreationForm):
 	class Meta:
 		model = User
 		fields = ("username", "password1", "password2")
-
+  # super(NewUserForm, self).save(commit=False) line calls the save method of the parent class (UserCreationForm).
+  # This parent class is responsible for handling the form data 
+  # And creating a new instance of the User model with the provided data.
 	def save(self, commit=True):
 		user = super(NewUserForm, self).save(commit=False)
 		if commit:

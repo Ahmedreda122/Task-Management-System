@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from .forms import TaskForm
 from .models import Task
 from .forms import NewUserForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm 
-from django.contrib import messages
 
 # priority Dictionary to express every priority degree in a understandable sentence
 priority = { 
@@ -30,13 +30,11 @@ def index(request):
                 )   
                 # Save the Task data into the DB
                 task.save()
-        else:
-            # Get Django Task Form Created in forms.py
-            form = TaskForm()
         
         # Get Tasks Objects from Task Model ordered by their status(active or not) then their priority then their deadline date
-        Tasks = Task.objects.all().order_by("-active", "-priority", "deadline").values() 
-
+        Tasks = Task.objects.filter(user=request.user).order_by("-active", "-priority", "deadline")
+        # Get Django Task Form Created in forms.py
+        form = TaskForm()
         context = {"Tasks": Tasks, "form": form, "prioritySentence": priority} 
         # Render home page with help of context data (the Dynamic content)          
         return render(request, "Home/home.html", context)  
@@ -45,39 +43,48 @@ def index(request):
 
 
 def toggleTask(request,id):
-    obj = Task.objects.get(ID=id)
-    # toggle active value by using the following xor operation 
-    obj.active = obj.active ^ True
-    obj.save()
-    return redirect("index")
-    
+    if request.user.is_authenticated:
+        obj = Task.objects.get(ID=id)
+        # toggle active value by using the following xor operation 
+        obj.active = obj.active ^ True
+        obj.save()
+        return redirect("index")
+    else:
+        return redirect("login")
     
 def deleteTask(request,id):
-    obj = Task.objects.get(ID=id)
-    obj.delete()
-    return redirect("index")
+    if request.user.is_authenticated:
+        obj = Task.objects.get(ID=id)
+        obj.delete()
+        return redirect("index")
+    else:
+        return redirect("login")
 
 def updateTask(request,id):
-    # Get object from Task Model by its ID
-    task = Task.objects.get(ID=id)
-    
-    if request.method == "POST":
-        # Get the Form Data Sent by User
-        form = TaskForm(request.POST, instance=task)
-        # Check that form has no common errors
-        if form.is_valid():
-            # Update the object with the new values provided by the user. 
-            # The `save()` method will automatically handle the update operation 
-            # and persist the changes to the database. 
-            form.save()
-            return redirect("index")
-    else:
-        # Get Django Task Form Created in forms.py and apply old values to its fields
-        form = TaskForm(instance=task)
+    if request.user.is_authenticated:
+        # Get object from Task Model by its ID
+        task = Task.objects.get(ID=id)
         
-    context = {"Task":task,"form": form}
-    # Render home page with help of context data (the Dynamic content)        
-    return render(request, "Home/update.html", context)  
+        if request.method == "POST":
+            # Get Django Task Form Created in forms.py and apply old values (which exists in task) to its fields
+            form = TaskForm(request.POST, instance=task)
+            # Check that form has no common errors
+            if form.is_valid():
+                # Update the object with the new values provided by the user. 
+                # The `save()` method will automatically handle the update operation 
+                # and persist the changes to the database. 
+                form.save()
+                return redirect("index")
+        else:
+            # Get Django Task Form Created in forms.py and apply old values to its fields
+            form = TaskForm(instance=task)
+            
+        context = {"Task":task,"form": form}
+        # Render home page with help of context data (the Dynamic content)        
+        return render(request, "Home/update.html", context)  
+    else:
+        return redirect("login")
+
 
 def register(request):
 	if request.method == "POST":
@@ -98,11 +105,12 @@ def register(request):
 
 def loginView(request):
 	if request.method == "POST":
+        # Get Prepared Django Login Form and fill it with user's data coming from POST request
 		form = AuthenticationForm(request, data=request.POST)
 		if form.is_valid():
 			username = form.cleaned_data.get('username')
 			password = form.cleaned_data.get('password')
-            # Validate username and password
+            # Validate username and password (user credentials)
 			user = authenticate(username=username, password=password)
             # If the user is authenticated
 			if user is not None:
