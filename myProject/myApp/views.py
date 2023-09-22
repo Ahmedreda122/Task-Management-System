@@ -30,11 +30,11 @@ def index(request):
                 )   
                 # Save the Task data into the DB
                 task.save()
-        
+        else:
+            # Get Django Task Form Created in forms.py
+            form = TaskForm()
         # Get Tasks Objects from Task Model ordered by their status(active or not) then their priority then their deadline date
         Tasks = Task.objects.filter(user=request.user).order_by("-active", "-priority", "deadline")
-        # Get Django Task Form Created in forms.py
-        form = TaskForm()
         context = {"Tasks": Tasks, "form": form, "prioritySentence": priority} 
         # Render home page with help of context data (the Dynamic content)          
         return render(request, "Home/home.html", context)  
